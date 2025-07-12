@@ -1,0 +1,77 @@
+import pygame
+from random import randint
+
+class DodgeCoin:
+    def __init__(self):
+        pygame.init()
+
+        self.width, self.height = 640, 480
+        self.window = pygame.display.set_mode((self.width, self.height))
+        pygame.display.set_caption("Dodge Coin")
+
+        self.robot = pygame.image.load("robot.png")
+        self.robot_x = self.width / 2 - self.robot.get_width() / 2
+        self.robot_y = self.height - self.robot.get_height()
+        self.to_left = False
+        self.to_right = False
+        self.robot_speed = 5
+
+        self.monster = pygame.image.load("monster.png")
+        self.monsters = []
+
+        self.coin = pygame.image.load("coin.png")
+        self.coins = []
+
+        self.clock = pygame.time.Clock()
+        self.running = True
+
+        self.main_loop()
+    
+    def spawn_monster(self):
+        x = randint(0, self.width - self.monsters.width)
+
+
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    self.to_left = True
+                if event.key == pygame.K_RIGHT:
+                    self.to_right = True
+            
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT:
+                    self.to_left = False
+                if event.key == pygame.K_RIGHT:
+                    self.to_right = False
+
+            if event.type == pygame.QUIT:
+                self.running = False
+
+    def update(self):
+        self.move_robot()
+        
+    
+    def move_robot(self):
+        if self.to_left:
+            self.robot_x -= self.robot_speed
+        if self.to_right:
+            self.robot_x += self.robot_speed
+        self.robot_x = max(self.robot_x, 0)
+        self.robot_x = min(self.robot_x, self.width - self.robot.get_width())
+
+    def draw(self):
+        self.window.fill((30, 30, 30))
+        self.window.blit(self.robot, (self.robot_x, self.robot_y))
+        pygame.display.flip()
+
+    def main_loop(self):
+        while self.running:
+            self.handle_events()
+            self.update()
+            self.draw()
+            self.clock.tick(60)
+
+
+if __name__ == "__main__":
+    DodgeCoin()

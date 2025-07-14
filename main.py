@@ -28,8 +28,32 @@ class DodgeCoin:
         self.main_loop()
     
     def spawn_monster(self):
-        x = randint(0, self.width - self.monsters.width)
+        x = randint(0, self.width - self.monster.get_width())
+        y = randint(-self.height, 0)
+        self.monsters.append([x, y])
 
+    def update_monsters(self):
+        if randint(1, 30) == 1:
+            self.spawn_monster()
+        
+        new_monsters = []
+        for pos in self.monsters:
+            x, y = pos
+            if self.check_collision(x, y):
+                self.running = False
+                return
+            y += 5
+            if y < self.height - self.monster.get_height():
+                new_monsters.append([x, y])
+        
+        self.monsters = new_monsters
+
+    def check_collision(self, x, y):
+        return (
+            x <= self.robot_x + self.robot.get_width() and
+            x + self.monster.get_width() >= self.robot_x and
+            y + self.monster.get_height() >= self.robot_y
+        )
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -50,8 +74,8 @@ class DodgeCoin:
 
     def update(self):
         self.move_robot()
+        self.update_monsters()
         
-    
     def move_robot(self):
         if self.to_left:
             self.robot_x -= self.robot_speed
@@ -63,6 +87,8 @@ class DodgeCoin:
     def draw(self):
         self.window.fill((30, 30, 30))
         self.window.blit(self.robot, (self.robot_x, self.robot_y))
+        for x, y in self.monsters:
+            self.window.blit(self.monster, (x, y))
         pygame.display.flip()
 
     def main_loop(self):
@@ -71,7 +97,6 @@ class DodgeCoin:
             self.update()
             self.draw()
             self.clock.tick(60)
-
 
 if __name__ == "__main__":
     DodgeCoin()

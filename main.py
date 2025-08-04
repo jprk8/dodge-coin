@@ -49,7 +49,6 @@ class DodgeCoin:
             x, y = pos
             if self.check_collision(x, y):
                 self.points = 0
-                return
             y += 5
             if y < self.height - self.monster.get_height():
                 new_monsters.append([x, y])
